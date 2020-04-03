@@ -1,13 +1,22 @@
 [package]
-name = "server"
+name = "microtron"
 version = "0.1.0"
 authors = ["Moritz Riede <mriede@tuta.io>"]
 edition = "2018"
 
+[lib]
+name = "microtron"
+path = "src/lib.rs"
+
+[[bin]]
+name = "microtron"
+path = "src/main.rs"
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+colored = "1.9.3"
 bincode = "1.2.1"
-serde   = "1.0.105"
-tokio   = "0.2.14"
+serde   = { version = "1.0", features = ['derive'] }
+tokio   = { version = "0.2", features = ['full'] }
 ws      = "0.9.1"
