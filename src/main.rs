@@ -10,32 +10,51 @@ use tokio;
 use tokio::net::UdpSocket;
 use colored::*;
 
-use microtron::Server;
+use microtron::Runtime;
 
-macro_rules! info {
-    ($msg:expr) => {
-        println!("{}   {}", "[info]".cyan().bold(), $msg);
-    };
+fn print_ok(message: String, description: Option<String>) {
+    println!("{}   {}\n", " OK ".green().bold().reversed(), message.bold());
+
+    if let Some(text) = description {
+        let lines = text.split("\n");
+
+        for line in lines {
+            println!("       {}", line);
+        }
+
+        println!("");
+    }
 }
 
-macro_rules! error {
-    ($msg:expr) => {
-        println!("{}  {}", "[error]".bright_red().bold(), $msg.bold());
-    };
+fn print_err(message: String, description: Option<String>) {
+    println!("{}  {}\n", " ERR ".red().bold().reversed(), message.bold());
+
+    if let Some(text) = description {
+        let lines = text.split("\n");
+
+        for line in lines {
+            println!("       {}", line);
+        }
+
+        println!("");
+    }
 }
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     let addr = env::args()
         .nth(1)
-        .unwrap_or_else(|| "127.0.0.1:8080".to_string());
+        .unwrap_or_else(|| "127.0.0.1:32000".to_string());
 
     let socket = UdpSocket::bind(&addr).await?;
-    info!(format!("Module server listening on {}", socket.local_addr()?));
+    self::print_ok(
+        format!("Packet forwarder listening on udp://{}", socket.local_addr()?),
+        Some(format!("You can now go ahead and connect modules.")),
+    );
 
     let peers = HashMap::new();
 
-    let server = Server {
+    let server = Runtime {
         socket,
         peers,
         counter: 0,
