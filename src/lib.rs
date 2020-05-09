@@ -12,14 +12,14 @@ use tokio::net::UdpSocket;
 use self::message::{Packet, Message};
 use self::types::{ID};
 
-pub struct Server {
+pub struct Runtime {
     pub socket:  UdpSocket,
     pub peers:   HashMap<ID, SocketAddr>,
     pub counter: ID,
     pub buf:     Vec<u8>,
 }
 
-impl Server {
+impl Runtime {
     pub async fn run(mut self) -> Result<(), io::Error> {
         loop {
             // Wait to receive a datagram on the UDP socket.
