@@ -10,12 +10,14 @@ pub struct Packet {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum Message {
-    Connect,
-    ConnectionEstablished,
-
-    Buffer {
-        data: Vec<Sample>,
+	/// A module requests a connection to the relay server
+    ConnectionRequested {
+    	name: Option<String>,
+    	description: Option<String>,
     },
 
-    Invalid,
+    /// The connection to the relay has been successfully established
+    ConnectionEstablished {
+    	id: ID,
+    },
 }
