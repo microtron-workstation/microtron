@@ -16,8 +16,8 @@ This will bind the packet forwarder to  `udp://localhost:32000`, then you should
 
 ## Features
 
-* ### `Process-based module graph`
+### `Process-based module graph`
 The Microtron runtime maintains a directed acyclic graph of processes and forwards messages like audio buffers, MIDI events or parameter changes to their destinations via UDP.
 
-* ### `Save and restore projects`
+### `Save and restore projects`
 The current configuration of the runtime, meaning the graph nodes, edges and other audio-related data such as sample rate and format can be saved to a file for later use.
