@@ -1,8 +1,8 @@
-![banner](https://i.imgur.com/NyLmOfr.png)
+![banner](https://i.imgur.com/u3JtfYm.png)
 
 ## Introduction
 
-This repository is part of the Microtron ecosystem and contains a piece of software called the **coordinator**. It provides a central communication hub for all process-level modules which can also spawn subprocesses when needed. The *process-level* descriptor here refers to modules that are active on the UDP network, whereas the natural habitat of *application-level* modules lies within a process-level module. Grouped and entangled in chain and graph structures, they can form the engine of a synthesizer, a vocoder plugin or just about anything audio-related you could think of.
+This repository is part of the Microtron ecosystem and contains a piece of software called the **coordinator**. It provides a central communication hub for all process-level modules which can also spawn subprocesses when needed. The *process-level* descriptor here refers to modules that are active on the UDP network, whereas the natural habitat of *application-level* modules lies within a process-level module. Grouped and entangled in chain and graph structures, they form the engine of a synthesizer, a vocoder plugin or the business logic of any other audio processor or generator you could possibly imagine.
 
 The project compiles to a binary called `microtron` which takes care of two basic tasks:
 
@@ -14,7 +14,7 @@ Depending on their type, all arriving packets are either handled directly by the
 
 #### Launching, maintaining and destroying instances of process-level modules
 
-When a project file is loaded, the system launches all the process-level modules defined in the project, configures them to be in the correct state and builds a process graph. It's possible for a portion of the graph to be dead if something went wrong, such as a missing process or one that threw an error code. 
+When a project file is loaded, the system attempts launching all of the process-level modules defined in the project, configures them to be in the correct state and builds a process graph. There's a possiblity of a portion of the graph being dead if the launch of a command has failed or a module has terminated with an error code.
 
 As soon as we're warmed up, things become smoother again. "Maintaining" of a bunch of process-level modules more or less just means using them, and because Rust helps a lot with memory safety, we don't really need to worry about them crashing.
 
@@ -30,6 +30,12 @@ We need to have solid open-source digital signal processing infrastructure in pl
 
 What we also need is a *really* solid graphical user interface; one that is good enough to utilize the intense productivity boost gained from a UI/UX design optimized to evoke the state of psychological flow in the mind of the creator.
 
+#### Stability and Speed
+
+Every passionate producer enjoys being in the state of flow, when everything just comes together automatically, the ideas are flying to you in a stream, only to arrive at the aggravating moment of seeing your entire audio workstation crash and realizing that you forgot to save the project.
+
+Being safe from a large number of hard-to-debug memory bugs that are statically prevented by Rust in combination with using the fewest `unwrap()` calls possible gives us a quite stable foundation on which we can build reliant software that doesn't just crash out of nowhere, which is especially desirable if you're currently delivering a live performance to your fans.
+
 ## Features
 
 #### Process-Based Module Graph
@@ -38,7 +44,7 @@ The foundation of Microtron's signal processing logic, a single audio node, is r
 
 #### Application-Level Dataflow Structures
 
-There are pre-built modules implementing different module structures, allowing modules to be composed with others in chain and graph structures that are local to the application itself, rather than to the process-level graph. Additionally, since the structural containers implement the `Module` trait themselves, the application-level structures can theoretically be nested infinitely deep, allowing complex application-level dataflow structures to be used for digital instruments and effects.
+There are pre-built modules implementing different data structures, allowing modules to be composed in chain and graph structures that are made to be embedded within a process-level module. Additionally, since the data structures implement `Module` themselves, they can be nested as many layers deep as desired, allowing the usage of complex dataflow structures to implement digital instruments and effects.
 
 #### Extensible Design
 
