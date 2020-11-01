@@ -4,7 +4,7 @@
 
 Microtron is a modular digital audio workstation which ties together audio modules into a process-based graph that can be used to produce and perform music.
 
-This repository contains a piece of software called *the coordinator*, which provides the `microtron` binary, and it has two basic responsibilities: relay packets between modules, and launch, maintain and destroy instances of process-level modules if a snapshot has been restored during the current session.
+This repository contains a piece of software called the **coordinator**. It provides the `microtron` binary, and has two basic responsibilities: relay packets between modules, and launch, maintain and destroy instances of process-level modules if a snapshot has been restored during the current session.
 
 The most important piece of the system is formed by the `Module` trait, which represents a piece of code that synthesizes or processes frames worth of audio. Enabling a module to join the process-level graph can be done by inserting it into a `ModuleServer` and launching the server. Additionally, the abstraction allows for the implementation of complex digital signal processing logic within an audio process by organizing modules into recursive `Chain` and `Graph` structures.
 
