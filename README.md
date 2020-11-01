@@ -10,26 +10,31 @@ This repository contains the coordinator.
 
 ## Features
 
-#### Process-based Module Graph
-The coordinator spawns processes and forwards messages between them, like audio buffers, MIDI events or parameter changes. A struct implementing the `Module` trait can be wrapped in a structure that enables it to communicate over the network and register itself with the coordinator, turning it into a process.
+#### Process-Based Module Graph
+The coordinator spawns processes and forwards packets holding audio buffers, MIDI events or parameter changes to their destinations using UDP connections. An implementor of the `Module` trait can be wrapped in a structure which enables it to communicate over the network and register itself with the coordinator, turning it into a process.
 
 #### Application-Level Dataflow Structures
-The `microtron_module` crate provides pre-built modules which enclose other implementors of the `Module` trait in chain and graph structures, allowing for complex data-flow setups within a single application for digital instruments and effects.
+The `microtron_module` crate provides pre-built modules which enclose other modules in chain and graph structures, allowing for complex data-flow setups within a single process for digital instruments and effects.
 
 #### Extensible Design
 The coordinator is structurally similar to a microkernel in that it only handles the most essential work needed for the communication between network-enabled modules, leaving secondary things like audio rendering, graph synchronization as well as graphical, note and device interfaces to separate modules.
 
-This makes it easy to switch out a module that is incompatible with your environment, for example if your code is running on a SoC where you might not be able to output sound like you usually would. *(The `no_std` support enabling this in the first place is in the works)*
+This makes it easy to switch out a module that is incompatible with your environment, for example if your code is running on a System-on-a-Chip where you might not be able to output sound like you usually would. *(The `no_std` support enabling this in the first place is coming soon)*
 
 #### Save and Restore
-Save a human-readable YAML snapshot of the current processes, their connections, the arrangement and other coordinator data for later use.
+Save a human-readable YAML snapshot of the current processes, their connections, the arrangement and other coordinator state so it can be loaded at a later point in time.
 
-## Installation
+## Getting Started
+As long as you have a recent Rust toolchain installed and your PATH environment variable contains the folder where Cargo installs binaries, you should be good to go.
 
-Make sure you have a Rust toolchain installed, then run the following command to compile and run the application:
+### Compile and run in-folder
+Use `cargo run` while hacking on the codebase, and compile with the release flag enabled (`cargo run --release`) if you need a build optimized for performance.
 
-```
-cargo run --release
-```
+### Installation and Usage
+Installing a copy of the Microtron coordinator onto your system can be done by simply running `cargo install` inside the root of the repository. After the command has completed successfully, verify the installation by entering `microtron` into the console. If all went well, you should be greeted by the coordinator and dropped into a blank Microtron setup.
 
-This will bind the packet forwarder to  [udp://localhost:32000](udp://localhost:32000), then you should be able to connect modules by sending a `Handshake` packet.
+## Contributing
+As I'm still figuring this out myself, it might be a little early, but if you have an idea for a feature or a change and you want to see it integrated, please don't hesitate to create a pull request or project issue.
+
+## License
+**This project is licensed unter the MIT license.**
