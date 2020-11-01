@@ -10,18 +10,18 @@ This repository contains the coordinator.
 
 ## Features
 
-* #### `Process-based Module Graph`
+#### Process-based Module Graph
 The coordinator spawns processes and forwards messages between them, like audio buffers, MIDI events or parameter changes. A struct implementing the `Module` trait can be wrapped in a structure that enables it to communicate over the network and register itself with the coordinator, turning it into a process.
 
-* #### `Application-Level Dataflow Structures`
+#### Application-Level Dataflow Structures
 The `microtron_module` crate provides pre-built modules which enclose other implementors of the `Module` trait in chain and graph structures, allowing for complex data-flow setups within a single application for digital instruments and effects.
 
-* #### `Extensible Design`
+#### Extensible Design
 The coordinator is structurally similar to a microkernel in that it only handles the most essential work needed for the communication between network-enabled modules, leaving secondary things like audio rendering, graph synchronization as well as graphical, note and device interfaces to separate modules.
 
 This makes it easy to switch out a module that is incompatible with your environment, for example if your code is running on a SoC where you might not be able to output sound like you usually would. *(The `no_std` support enabling this in the first place is in the works)*
 
-* #### `Save and Restore`
+#### Save and Restore
 Save a human-readable YAML snapshot of the current processes, their connections, the arrangement and other coordinator data for later use.
 
 ## Installation
