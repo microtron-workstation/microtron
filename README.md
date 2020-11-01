@@ -2,23 +2,23 @@
 
 ## Introduction
 
-This repository is part of the Microtron ecosystem and contains a piece of software called the **coordinator**. It provides a central communication hub for all process-level modules which can also spawn subprocesses when needed. The *process-level* descriptor here refers to modules that are active on the UDP network, whereas the natural habitat of *application-level* modules lies within a process-level module. Grouped and entangled in chain and graph structures, they form the engine of a synthesizer, a vocoder plugin or the business logic of any other audio processor or generator you could possibly imagine.
+This repository contains piece of software called the **coordinator**, which plays a mission-critical role in the Microtron ecosystem. It provides a low-latency, high-throughput packet relay, enabling process-level modules to easily communicate and also manages child processes that are needed when loading a previously saved project. The *process-level* descriptor refers to modules that are active on the UDP network, whereas the natural habitat of *application-level* modules lies within a process-level module. Grouped and entangled in chain and graph structures, they form the engine of a synthesizer, a vocoder plugin or the business logic of any other audio processor or generator you could possibly imagine.
 
 The project compiles to a binary called `microtron` which takes care of two basic tasks:
 
 #### Relaying packets from one process-level module to another
 
-Depending on their type, all arriving packets are either handled directly by the coordinator, or they are processed to determine their destination according to the internal representation of the process graph, after which they are quickly sent.
+Depending on their type, the relayed packets are either directly interpreted and consumed by the coordinator, or they are processed to determine their destination from the current internal representation of the process graph.
 
 *We should probably use a timecode of some sort here to ensure the right order of sample buffers, since UDP does not guarantee the correct ordering of arriving packets. For our case, maybe even a simple solution like counting to 1024, then wrapping back around and attaching this number to every packet would allow us to make sure that all packets are processed in the order they were sent.*
 
 #### Launching, maintaining and destroying instances of process-level modules
 
-When a project file is loaded, the system attempts launching all of the process-level modules defined in the project, configures them to be in the correct state and builds a process graph. There's a possiblity of a portion of the graph being dead if the launch of a command has failed or a module has terminated with an error code.
+When a project file is loaded, the system attempts launching all of the process-level modules defined in the project, configuring them to be in the correct state and building a process graph. There's a possiblity of a portion of the graph being dead if the launch of a command has failed or a module has terminated with an error code.
 
-As soon as we're warmed up, things become smoother again. "Maintaining" of a bunch of process-level modules more or less just means using them, and because Rust helps a lot with memory safety, we don't really need to worry about them crashing.
+As soon as we're warmed up, things become smoother again. "Maintaining" a bunch of process-level modules more or less just means using them, and because Rust helps a lot with memory safety, we don't really need to worry about them crashing.
 
-Sending an exit packet to a coordinator which is currently giving birth will momentarily suspend the shutdown, try to gracefully shut down all subprocesses and then resume as soon as there are none left.
+Sending an exit packet to a coordinator with running child processes will momentarily suspend the shutdown, attempt to gracefully shut down all subprocesses and then terminate the coordinator itself.
 
 ## Goals
 
@@ -32,15 +32,15 @@ What we also need is a *really* solid graphical user interface; one that is good
 
 #### Stability and Speed
 
-Every passionate producer enjoys being in the state of flow, when everything just comes together automatically, the ideas are flying to you in a stream, only to arrive at the aggravating moment of seeing your entire audio workstation crash and realizing that you forgot to save the project.
+Every passionate producer enjoys being in the flow, when everything just seems to come together naturally, the ideas are flying to you in a stream, but suddenly you arrive at the aggravating moment of seeing your digital audio workstation crash in front of you, realizing you forgot to save the project and the progress you made is lost.
 
-Being safe from a large number of hard-to-debug memory bugs that are statically prevented by Rust in combination with using the fewest `unwrap()` calls possible gives us a quite stable foundation on which we can build reliant software that doesn't just crash out of nowhere, which is especially desirable if you're currently delivering a live performance to your fans.
+Being protected from a large number of hard-to-debug memory bugs in combination with the avoidance of `panic!()` calls wherever possible gives us quite a stable foundation on which we can build reliant software that doesn't just crash out of nowhere, which is especially desirable if you're currently delivering a live performance to your fans.
 
 ## Features
 
 #### Process-Based Module Graph
 
-The foundation of Microtron's signal processing logic, a single audio node, is realized as the `Module` trait. It represents a piece of code which continuously synthesizes or processes frames worth of audio. Integrating a module into a `ModuleSocket` equips it with UDP networking capabilities, thus enabling it to join the process-level graph maintained by the coordinator.
+The foundation of Microtron's signal processing logic, a single audio node, is formed by the `Module` trait. It represents a piece of code which continuously synthesizes or processes frames worth of audio. Integrating a module into a `ModuleSocket` equips it with UDP networking capabilities, thus enabling it to join the process-level graph maintained by the coordinator.
 
 #### Application-Level Dataflow Structures
 
