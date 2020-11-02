@@ -2,61 +2,23 @@
 
 ## Introduction
 
-This repository contains piece of software called the **coordinator**, which plays a mission-critical role in the Microtron ecosystem. It provides a low-latency, high-throughput packet relay, enabling process-level modules to easily communicate and also manages child processes that are needed when loading a previously saved project. The *process-level* descriptor refers to modules that are active on the UDP network, whereas the natural habitat of *application-level* modules lies within a process-level module. Grouped and entangled in chain and graph structures, they form the engine of a synthesizer, a vocoder plugin or the business logic of any other audio processor or generator you could possibly imagine.
-
-The project compiles to a binary called `microtron` which takes care of two basic tasks:
-
-#### Relaying packets from one process-level module to another
-
-Depending on their type, the relayed packets are either directly interpreted and consumed by the coordinator, or they are processed to determine their destination from the current internal representation of the process graph.
-
-*We should probably use a timecode of some sort here to ensure the right order of sample buffers, since UDP does not guarantee the correct ordering of arriving packets. For our case, maybe even a simple solution like counting to 1024, then wrapping back around and attaching this number to every packet would allow us to make sure that all packets are processed in the order they were sent.*
-
-#### Launching, maintaining and destroying instances of process-level modules
-
-When a project file is loaded, the system attempts launching all of the process-level modules defined in the project, configuring them to be in the correct state and building a process graph. There's a possiblity of a portion of the graph being dead if the launch of a command has failed or a module has terminated with an error code.
-
-As soon as we're warmed up, things become smoother again. "Maintaining" a bunch of process-level modules more or less just means using them, and because Rust helps a lot with memory safety, we don't really need to worry about them crashing.
-
-Sending an exit packet to a coordinator with running child processes will momentarily suspend the shutdown, attempt to gracefully shut down all subprocesses and then terminate the coordinator itself.
-
-## Goals
-
-#### A free, professional-grade digital audio workstation for everyone.
-
-Yes, this is an ambitious goal. Our mission is to do something new. We want to make high-quality digital audio production tools available to everyone free of charge, battling the ever-growing commercialization especially present in the field of digital audio workstations and widely used audio plugin interfaces.
-
-We need to have solid open-source digital signal processing infrastructure in place to implement a DAW capable of keeping up with the current industry standard especially since many commercial digital audio workstations have been around for a long time.
-
-What we also need is a *really* solid graphical user interface; one that is good enough to utilize the intense productivity boost gained from a UI/UX design optimized to evoke the state of psychological flow in the mind of the creator.
-
-#### Stability and Speed
-
-Every passionate producer enjoys being in the flow, when everything just seems to come together naturally, the ideas are flying to you in a stream, but suddenly you arrive at the aggravating moment of seeing your digital audio workstation crash in front of you, realizing you forgot to save the project and the progress you made is lost.
-
-Being protected from a large number of hard-to-debug memory bugs in combination with the avoidance of `panic!()` calls wherever possible gives us quite a stable foundation on which we can build reliant software that doesn't just crash out of nowhere, which is especially desirable if you're currently delivering a live performance to your fans.
+`microtron` is a high-performance asynchronous packet relay that forms the foundation of inter-modular data transmission in the Microtron system.
 
 ## Features
 
 #### Process-Based Module Graph
 
-The foundation of Microtron's signal processing logic, a single audio node, is formed by the `Module` trait. It represents a piece of code which continuously synthesizes or processes frames worth of audio. Integrating a module into a `ModuleSocket` equips it with UDP networking capabilities, thus enabling it to join the process-level graph maintained by the coordinator.
+The relay server constantly maintains a graph of all connected modules and their connections. Keep in mind that this is just a graph-like data structure containing a few socket addresses and encoding how they are linked. We use this to figure out where the data received in our endless stream of packets should actually go.
 
-#### Application-Level Dataflow Structures
+Any piece of code which continuously synthesizes or processes frames worth of audio is considered a module. Integrating one into a `ModuleSocket` type equips it with UDP networking capabilities, enabling it to join the process-level graph maintained by the packet relay.
 
-There are pre-built modules implementing different data structures, allowing modules to be composed in chain and graph structures that are made to be embedded within a process-level module. Additionally, since the data structures implement `Module` themselves, they can be nested as many layers deep as desired, allowing the usage of complex dataflow structures to implement digital instruments and effects.
+#### Low Latency, High Throughput
 
-#### Extensible Design
-
-The coordinator is structurally similar to a microkernel as it only handles the most fundamental work required for safe and reliable communication between process-level modules and leaves the implementation of higher-level tasks like audio rendering, device interfaces, song arrangements and graphical user interfaces to external modules.
-
-This makes it easy to replace a part of the DAW if it's incompatible with your current environment. Theoretically, if your code was running on a System-on-a-Chip where direct output to the speakers wasn't possible, you could just replace the stock renderer with another module doing exactly what you need. Forwarding the audio to GPIO pins or something. 
-
-*(And yes, support for `no_std` will hopefully arrive sometime in the future.)*
+The simple design employed by the relay server combined with a highly performant asynchronous runtime provided by `tokio` enables it to deliver all messages as quickly as possible, even under the stress of a high load.
 
 #### Save and Restore
 
-Save a human-readable YAML snapshot of the current processes, their connections, the arrangement and other coordinator state so that it can be loaded at a later point in time.
+Save a human-readable YAML snapshot of the current processes, their connections and other relay state so that it can be restored at a later point in time.
 
 ## Getting Started
 
@@ -72,7 +34,7 @@ cargo install microtron
 
 After the command has completed, you can verify the installation by entering `microtron` into the console. If everything went according to plan, you should be greeted by the coordinator setting up an empty project and waiting for modules to connect.
 
-### Compile and run locally
+### Local compilation and execution
 
 Alternatively, you can use the following commands to compile and run the program without installing it onto your system right away. This is probably the right way to go if you just want to have a look at the application or hack on the codebase a bit.
 
