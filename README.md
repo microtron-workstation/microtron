@@ -2,57 +2,45 @@
 
 ## Introduction
 
-`microtron` is a high-performance asynchronous packet relay that forms the foundation of inter-modular data transmission in the Microtron system.
+`microtron` is an open-source audio engine that is intended to be used as a modular signal processing backend for the Microtron workstation.
+
+Constantly maintaining a graph-like data structure that contains socket addresses and their relations enables us to figure out to which socket the messages received in our endless stream of packets should actually be sent to.
 
 ## Features
 
 #### Process-Based Module Graph
 
-The relay server constantly maintains a graph of all connected modules and their connections. Keep in mind that this is just a graph-like data structure containing a few socket addresses and encoding how they are linked. We use this to figure out where the data received in our endless stream of packets should actually go.
+Any piece of code that continuously synthesizes or processes frames worth of audio is considered a module. Integrating one into a `ModuleSocket` type equips it with UDP networking capabilities, enabling it to join the process-level graph maintained by the packet relay.
 
-Any piece of code which continuously synthesizes or processes frames worth of audio is considered a module. Integrating one into a `ModuleSocket` type equips it with UDP networking capabilities, enabling it to join the process-level graph maintained by the packet relay.
-
-#### Low Latency, High Throughput
-
-The simple design employed by the relay server combined with a highly performant asynchronous runtime provided by `tokio` enables it to deliver all messages as quickly as possible, even under the stress of a high load.
-
-#### Save and Restore
+#### Save- and Restorable Snapshots
 
 Save a human-readable YAML snapshot of the current processes, their connections and other relay state so that it can be restored at a later point in time.
 
-## Getting Started
+## Goals
 
-As long as you have a recent Rust toolchain installed and your PATH environment variable contains the folder where Cargo installs binaries, you should be good to go.
+#### A free, professional-grade digital audio workstation for everyone.
 
-### Installation and Usage
+Yes, this is an ambitious goal. Our mission is to do something new. We want to make high-quality digital audio production tools available to everyone free of charge, battling the ever-growing commercialization especially present in the field of digital audio workstations and widely used audio plugin interfaces.
 
-Install a copy of the coordinator onto your system by running the following Cargo command in your terminal emulator of choice:
+We need to have solid open-source digital signal processing infrastructure in place to implement a DAW capable of keeping up with the current industry standard especially since many commercial digital audio workstations have been in development for a long time.
 
-```
-cargo install microtron
-```
+What we also need is a *really* solid graphical user interface; one that is good enough to utilize the productivity boost gained from well-made user interface and experience design. Optimally, we would like to evoke the state of psychological flow in the mind of the creator.
 
-After the command has completed, you can verify the installation by entering `microtron` into the console. If everything went according to plan, you should be greeted by the coordinator setting up an empty project and waiting for modules to connect.
+#### Stability and Speed
 
-### Local compilation and execution
+Being protected from a large number of hard-to-debug memory bugs in combination with the avoidance of `panic!()` calls whenever possible gives us a stable foundation on which we can build software that doesn't just crash out of nowhere, which is especially desirable if you're currently delivering a live performance to your fans.
 
-Alternatively, you can use the following commands to compile and run the program without installing it onto your system right away. This is probably the right way to go if you just want to have a look at the application or hack on the codebase a bit.
-
-```
-cargo run                    # Compile development build
-cargo run --release          # Compile build with optimizations (may take much longer)
-```
+Furthermore, we will explore if different types of optimizations like SIMD and GPU parallelization are useful for audio synthesis and processing, especially to complex modules like granular synthesizers and real-time harmonizers.
 
 ## Project Status
 
-As of November 2020, this project is still *very* much in the alpha phase. 
+As of November 2020, this project is still very much in the alpha phase. 
 
-**Please keep in mind that this is an experiment and in no way production-ready. It is very likely that the whole Microtron codebase will experience intense, earth-shattering changes during their journey to 1.0**
-
+**Please keep in mind that this is an experiment and in no way production-ready. It is very likely that the whole Microtron codebase will experience intense, earth-shattering changes during its journey to 1.0**
 
 ## Contributing
 
-Since I'm still in the process of slowly figuring out the exact combination of nuts, bolts and duct tape required to make this project work more or less seamlessly, I'll probably need quite some time to even partially wrap my head around all the interesting concepts and dark corners of digital signal processing I can find, about filter design, granular synthesis and *so many* other things. If you have an idea for a feature or a change, or you'd like to report an error, please don't hesitate to open an issue, creating a pull request or sending me a message.
+Since I'm still in the process of slowly figuring out the exact combination of nuts, bolts and duct tape required to make this project work, I'll probably need some time to wrap my head around all the interesting concepts and dark corners of digital signal processing I can find, about filter design, granular synthesis and *so* many other things. If you have an idea for a feature or a change, or you'd like to report an error, please don't hesitate to open an issue, create a pull request or send me a message.
 
 ## License
 
